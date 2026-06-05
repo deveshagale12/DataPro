@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataPro | Admin Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: #F8FAFC;
+      color: #0F172A;
+      margin: 0;
+    }
+
+    .blob {
+      position: fixed;
+      width: 520px;
+      height: 520px;
+      border-radius: 999px;
+      filter: blur(90px);
+      opacity: .35;
+      z-index: -1;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid #E2E8F0;
+      border-radius: 22px;
+      box-shadow: 0 4px 20px -2px rgba(79, 70, 229, .10);
+      transition: .2s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 18px 35px -12px rgba(79, 70, 229, .22);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 13px;
+      transition: .2s ease;
+      border: 0;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, .3);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      color: #334155;
+    }
+
+    .btn-danger {
+      background: #fff;
+      border: 1px solid #FECACA;
+      color: #DC2626;
+    }
+
+    .btn-success {
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #047857;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .input {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #E2E8F0;
+      background: #fff;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .input:focus {
+      border-color: #4F46E5;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12);
+    }
+
+    .label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 7px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1000px;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #64748B;
+      text-transform: uppercase;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    td {
+      padding: 14px;
+      font-size: 14px;
+      border-bottom: 1px solid #EEF2F7;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: #F8FAFC;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .badge-indigo { background: #EEF2FF; color: #4338CA; }
+    .badge-green { background: #ECFDF5; color: #047857; }
+    .badge-yellow { background: #FFFBEB; color: #B45309; }
+    .badge-red { background: #FEF2F2; color: #B91C1C; }
+    .badge-slate { background: #F1F5F9; color: #475569; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, .45);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .gradient-title {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .stat {
+      background: linear-gradient(135deg, #EEF2FF, #F5F3FF);
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: 70vh;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      background: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="blob bg-indigo-300 top-[-160px] left-[-160px]"></div>
+  <div class="blob bg-violet-300 bottom-[-160px] right-[-160px]"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+
+    <header class="card p-6 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+        <div>
+          <p class="text-sm font-extrabold text-indigo-600 tracking-wide">DATAPRO ADMIN CONTROL CENTER</p>
+          <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mt-2">
+            Admin <span class="gradient-title">Dashboard</span>
+          </h1>
+          <p id="profileInfo" class="text-slate-500 mt-2 font-medium"></p>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button class="btn btn-secondary" onclick="refreshVisible()">Refresh</button>
+          <button class="btn btn-primary" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div class="card stat p-5">
+        <p class="text-slate-500 font-bold">Total Users</p>
+        <h3 id="totalUsers" class="text-3xl font-extrabold text-indigo-600">0</h3>
+      </div>
+      <div class="card stat p-5">
+        <p class="text-slate-500 font-bold">Total Files</p>
+        <h3 id="totalFiles" class="text-3xl font-extrabold text-violet-600">0</h3>
+      </div>
+      <div class="card stat p-5">
+        <p class="text-slate-500 font-bold">Total Logs</p>
+        <h3 id="totalLogs" class="text-3xl font-extrabold text-emerald-600">0</h3>
+      </div>
+      <div class="card stat p-5">
+        <p class="text-slate-500 font-bold">My Requests</p>
+        <h3 id="requestCount" class="text-3xl font-extrabold text-amber-600">0</h3>
+      </div>
+      <div class="card stat p-5">
+        <p class="text-slate-500 font-bold">Shared With Me</p>
+        <h3 id="sharedCount" class="text-3xl font-extrabold text-rose-600">0</h3>
+      </div>
+    </section>
+
+    <nav class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-3 mb-6">
+      <button class="btn btn-secondary nav-btn active" onclick="openSection('overviewSection',this)">Overview</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('usersSection',this)">Users</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('allFilesSection',this)">All Files</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('uploadSection',this)">Upload</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('myFilesSection',this)">My Files</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('communitySection',this)">Community</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('sharedSection',this)">Shared</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('requestsSection',this)">Requests</button>
+      <button class="btn btn-secondary nav-btn" onclick="openSection('logsSection',this)">Logs</button>
+    </nav>
+
+    <div id="messageBox" class="hidden"></div>
+
+    <section id="overviewSection" class="section active">
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="card p-6">
+          <h2 class="text-2xl font-extrabold mb-4">Upload Stats</h2>
+          <canvas id="uploadChart"></canvas>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="text-2xl font-extrabold mb-4">Role Distribution</h2>
+          <canvas id="roleChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="usersSection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-4">All Users</h2>
+      <div id="usersTable"></div>
+    </section>
+
+    <section id="allFilesSection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-2">All System Files</h2>
+      <p class="text-slate-500 mb-4">Admin view of every uploaded file with owner details.</p>
+      <div id="allFilesTable"></div>
+    </section>
+
+    <section id="uploadSection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-2">Admin Upload Secure File</h2>
+      <p class="text-slate-500 mb-6">Files are encrypted, checked by SHA-256, and stored in Supabase.</p>
+
+      <form onsubmit="uploadSecureFile(event)" class="grid md:grid-cols-2 gap-5">
+        <div>
+          <label class="label">Select File</label>
+          <input id="uploadFile" type="file" class="input" required>
+        </div>
+
+        <div>
+          <label class="label">Visibility</label>
+          <select id="uploadVisibility" class="input">
+            <option value="false">Private</option>
+            <option value="true">Public / Community</option>
+          </select>
+        </div>
+
+        <button id="uploadBtn" class="btn btn-primary md:col-span-2">Upload Encrypted File</button>
+      </form>
+    </section>
+
+    <section id="myFilesSection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-4">My Admin Files</h2>
+      <div id="myFilesTable"></div>
+    </section>
+
+    <section id="communitySection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-2">Community Files</h2>
+      <p class="text-slate-500 mb-4">Request access first. After OTP is sent, use View File or Download.</p>
+      <div id="communityFilesTable"></div>
+    </section>
+
+    <section id="sharedSection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-4">Shared With Admin</h2>
+      <div id="sharedFilesTable"></div>
+    </section>
+
+    <section id="requestsSection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-2">Pending Access Requests</h2>
+      <p class="text-slate-500 mb-4">Users requesting your files. Click Send OTP to grant access.</p>
+      <div id="pendingRequestsTable"></div>
+    </section>
+
+    <section id="logsSection" class="section card p-6">
+      <h2 class="text-2xl font-extrabold mb-4">Global Download Logs</h2>
+      <div id="globalLogsTable"></div>
+    </section>
+  </div>
+
+  <!-- Share Modal -->
+  <div id="shareModal" class="modal">
+    <div class="card p-6 w-full max-w-md">
+      <h3 class="text-2xl font-extrabold mb-4">Share File</h3>
+      <form onsubmit="shareFile(event)" class="space-y-4">
+        <input id="shareFileId" type="hidden">
+        <div>
+          <label class="label">Share With Email</label>
+          <input id="shareEmail" type="email" class="input" required>
+        </div>
+        <div class="flex gap-3 justify-end">
+          <button type="button" class="btn btn-secondary" onclick="modal('shareModal',false)">Cancel</button>
+          <button class="btn btn-primary">Share & Send OTP</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- OTP Modal -->
+  <div id="otpModal" class="modal">
+    <div class="card p-6 w-full max-w-md">
+      <h3 class="text-2xl font-extrabold mb-4">Send OTP</h3>
+      <form onsubmit="sendOtp(event)" class="space-y-4">
+        <input id="otpFileId" type="hidden">
+        <div>
+          <label class="label">Target Email</label>
+          <input id="otpTargetEmail" type="email" class="input" required>
+        </div>
+        <div class="flex gap-3 justify-end">
+          <button type="button" class="btn btn-secondary" onclick="modal('otpModal',false)">Cancel</button>
+          <button class="btn btn-primary">Send OTP</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Request Modal -->
+  <div id="requestModal" class="modal">
+    <div class="card p-6 w-full max-w-md">
+      <h3 class="text-2xl font-extrabold mb-2">Request Access</h3>
+      <p id="requestHelp" class="text-slate-500 mb-4"></p>
+
+      <form onsubmit="requestAccess(event)" class="space-y-4">
+        <input id="requestFileId" type="hidden">
+
+        <div>
+          <label class="label">Requester Email</label>
+          <input id="requestRequesterEmail" type="email" class="input" required>
+        </div>
+
+        <div>
+          <label class="label">Owner Email</label>
+          <input id="requestOwnerEmail" type="email" class="input" required>
+        </div>
+
+        <div class="flex gap-3 justify-end">
+          <button type="button" class="btn btn-secondary" onclick="modal('requestModal',false)">Cancel</button>
+          <button class="btn btn-primary">Send Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View File Modal -->
+  <div id="viewModal" class="modal">
+    <div class="card p-6 w-full max-w-5xl">
+      <div class="flex flex-col md:flex-row justify-between gap-3 mb-4">
+        <div>
+          <h3 class="text-2xl font-extrabold">View Decrypted File</h3>
+          <p class="text-slate-500">Uses your preview API: <b>/api/files/preview/{fileId}</b></p>
+        </div>
+        <button class="btn btn-secondary" onclick="modal('viewModal',false)">Close</button>
+      </div>
+
+      <form onsubmit="viewFile(event)" class="grid md:grid-cols-4 gap-4 mb-5">
+        <input id="viewFileId" class="input" placeholder="File ID" required>
+        <input id="viewOtp" class="input" placeholder="OTP" required>
+        <input id="viewRequesterEmail" class="input" placeholder="Requester Email" required>
+        <input id="viewOwnerEmail" class="input" placeholder="Owner Email" required>
+        <button class="btn btn-primary md:col-span-4">View File</button>
+      </form>
+
+      <iframe id="previewFrame" class="preview-frame"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "https://datapro-bh55.onrender.com";
+
+    const loggedUser = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+
+    if (!loggedUser || !loggedUser.id) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    const userId = loggedUser.id;
+    const userEmail = loggedUser.email;
+    const userName = loggedUser.name || "Admin";
+    const userRole = (loggedUser.role || localStorage.getItem("userRole") || "ADMIN").toUpperCase();
+
+    let uploadChartInstance = null;
+    let roleChartInstance = null;
+
+    const $ = id => document.getElementById(id);
+
+    function esc(value) {
+      if (value === null || value === undefined) return "-";
+      return String(value).replace(/[&<>"']/g, c => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[c]));
+    }
+
+    function isPublicFile(file) {
+      return file.public === true || file.isPublic === true;
+    }
+
+    function dt(value) {
+      return value ? new Date(value).toLocaleString() : "-";
+    }
+
+    function modal(id, open = true) {
+      $(id).classList[open ? "add" : "remove"]("active");
+    }
+
+    function msg(text, ok = true) {
+      const box = $("messageBox");
+      box.className = ok
+        ? "mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 font-bold"
+        : "mb-6 rounded-xl bg-red-50 border border-red-200 text-red-700 px-5 py-4 font-bold";
+      box.textContent = text;
+      box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    async function readJson(response) {
+      const text = await response.text();
+      try {
+        return text ? JSON.parse(text) : {};
+      } catch {
+        return { success: false, message: text || "Invalid server response" };
+      }
+    }
+
+    async function getApi(endpoint) {
+      const response = await fetch(BASE_URL + endpoint);
+      const data = await readJson(response);
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || data.errorCode || "Request failed");
+      }
+
+      return data.data !== undefined ? data.data : data;
+    }
+
+    async function jsonApi(endpoint, method, body) {
+      const response = await fetch(BASE_URL + endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      const data = await readJson(response);
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || data.errorCode || "Request failed");
+      }
+
+      return data;
+    }
+
+    function openSection(id, btn) {
+      document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+      $(id).classList.add("active");
+
+      document.querySelectorAll(".nav-btn").forEach(button => button.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+
+      if (id === "overviewSection") {
+        loadStats();
+        loadUploadStats();
+        loadRoleDistribution();
+      }
+
+      if (id === "usersSection") loadUsers();
+      if (id === "allFilesSection") loadAllFiles();
+      if (id === "myFilesSection") loadMyFiles();
+      if (id === "communitySection") loadCommunity();
+      if (id === "sharedSection") loadShared();
+      if (id === "requestsSection") loadRequests();
+      if (id === "logsSection") loadGlobalLogs();
+    }
+
+    async function loadStats() {
+      try {
+        const stats = await getApi("/api/admin/stats");
+        $("totalUsers").textContent = stats.totalUsers || 0;
+        $("totalFiles").textContent = stats.totalFiles || 0;
+        $("totalLogs").textContent = stats.totalLogs || 0;
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const users = await getApi("/api/admin/users");
+
+        if (!users.length) {
+          $("usersTable").innerHTML = empty("No users found.");
+          return;
+        }
+
+        const rows = users.map(user => `
+          <tr>
+            <td><b class="text-indigo-600">#${esc(user.id)}</b></td>
+            <td>
+              <b>${esc(user.name)}</b>
+              <div class="text-xs text-slate-500">${esc(user.email)}</div>
+            </td>
+            <td><span class="badge ${user.role === "ADMIN" ? "badge-indigo" : "badge-green"}">${esc(user.role)}</span></td>
+            <td>${esc(user.mobile)}</td>
+            <td>${esc(user.education)}</td>
+            <td>${esc(user.address)}</td>
+            <td>${esc(user.dob)}</td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+            </td>
+          </tr>
+        `).join("");
+
+        $("usersTable").innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Mobile</th>
+                  <th>Education</th>
+                  <th>Address</th>
+                  <th>DOB</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadAllFiles() {
+      try {
+        const files = await getApi("/api/admin/all-files");
+
+        if (!files.length) {
+          $("allFilesTable").innerHTML = empty("No files found.");
+          return;
+        }
+
+        const rows = files.map(file => `
+          <tr>
+            <td>${esc(file.id || "-")}</td>
+            <td><b>${esc(file.fileName)}</b></td>
+            <td>${esc(file.fileType || file.contentType)}</td>
+            <td>${esc(file.ownerName)}</td>
+            <td>${esc(file.ownerEmail)}</td>
+            <td>${file.isPublic || file.public ? '<span class="badge badge-green">Public</span>' : '<span class="badge badge-indigo">Private</span>'}</td>
+            <td>
+              <button class="btn btn-primary" onclick="openViewModal('${esc(file.id || "")}', '${esc(file.ownerEmail || "")}')">View</button>
+            </td>
+          </tr>
+        `).join("");
+
+        $("allFilesTable").innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>File ID</th>
+                  <th>File Name</th>
+                  <th>Type</th>
+                  <th>Owner</th>
+                  <th>Owner Email</th>
+                  <th>Visibility</th>
+                  <th>View File</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadUploadStats() {
+      try {
+        const stats = await getApi("/api/admin/upload-stats");
+        const labels = Object.keys(stats);
+        const values = Object.values(stats);
+
+        if (uploadChartInstance) uploadChartInstance.destroy();
+
+        uploadChartInstance = new Chart($("uploadChart"), {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Files Uploaded",
+              data: values,
+              borderWidth: 3,
+              tension: .35
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: true } }
+          }
+        });
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadRoleDistribution() {
+      try {
+        const stats = await getApi("/api/admin/role-distribution");
+        const labels = Object.keys(stats);
+        const values = Object.values(stats);
+
+        if (roleChartInstance) roleChartInstance.destroy();
+
+        roleChartInstance = new Chart($("roleChart"), {
+          type: "doughnut",
+          data: {
+            labels,
+            datasets: [{
+              label: "Roles",
+              data: values
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: "bottom" } }
+          }
+        });
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadGlobalLogs() {
+      try {
+        const logs = await getApi("/api/admin/global-logs");
+
+        if (!logs.length) {
+          $("globalLogsTable").innerHTML = empty("No global logs found.");
+          return;
+        }
+
+        const rows = logs.map(log => `
+          <tr>
+            <td><b class="text-indigo-600">#${esc(log.id)}</b></td>
+            <td>${esc(log.fileId)}</td>
+            <td>${esc(log.fileName)}</td>
+            <td>${esc(log.downloaderEmail)}</td>
+            <td><span class="badge badge-slate">${esc(log.action)}</span></td>
+            <td>${esc(log.ownerId)}</td>
+            <td>${dt(log.downloadTime)}</td>
+          </tr>
+        `).join("");
+
+        $("globalLogsTable").innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Log ID</th>
+                  <th>File ID</th>
+                  <th>File</th>
+                  <th>Email</th>
+                  <th>Action</th>
+                  <th>Owner ID</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadMyFiles() {
+      try {
+        const files = await getApi(`/api/files/my-files/${userId}`);
+        renderFileTable("myFilesTable", files, "owner");
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadCommunity() {
+      try {
+        const files = await getApi(`/api/files/community-files/${userId}`);
+        renderFileTable("communityFilesTable", files, "community");
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadShared() {
+      try {
+        const files = await getApi(`/api/files/shared-with-me/${encodeURIComponent(userEmail)}`);
+        $("sharedCount").textContent = files.length;
+        renderFileTable("sharedFilesTable", files, "shared");
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function loadRequests() {
+      try {
+        const requests = await getApi(`/api/files/pending-requests/${userId}`);
+        $("requestCount").textContent = requests.length;
+
+        if (!requests.length) {
+          $("pendingRequestsTable").innerHTML = empty("No pending access requests.");
+          return;
+        }
+
+        const rows = requests.map(request => `
+          <tr>
+            <td><b class="text-indigo-600">#${esc(request.id)}</b></td>
+            <td>${esc(request.fileId)}</td>
+            <td>${esc(request.requesterEmail)}</td>
+            <td><span class="badge badge-yellow">${esc(request.status || "PENDING")}</span></td>
+            <td>${dt(request.requestedAt)}</td>
+            <td>
+              <button class="btn btn-primary" onclick="sendOtpDirect(${request.fileId}, '${esc(request.requesterEmail)}')">Send OTP</button>
+            </td>
+          </tr>
+        `).join("");
+
+        $("pendingRequestsTable").innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>File ID</th>
+                  <th>Requester</th>
+                  <th>Status</th>
+                  <th>Requested At</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    function renderFileTable(targetId, files, mode) {
+      if (!files.length) {
+        $(targetId).innerHTML = empty("No files found.");
+        return;
+      }
+
+      const rows = files.map(file => {
+        let actions = "";
+
+        if (mode === "owner") {
+          actions = `
+            <div class="flex flex-wrap gap-2">
+              <button class="btn btn-primary" onclick="openShare(${file.id})">Share</button>
+              <button class="btn btn-secondary" onclick="openOtp(${file.id})">Send OTP</button>
+              <button class="btn btn-success" onclick="openViewModal('${file.id}', '${userEmail}')">View</button>
+              <button class="btn btn-danger" onclick="revokeAccess(${file.id})">Revoke</button>
+            </div>
+          `;
+        }
+
+        if (mode === "community") {
+          actions = `
+            <div class="flex flex-wrap gap-2">
+              <button class="btn btn-primary" onclick="openRequest(${file.id}, ${file.userId || 'null'})">Request Access</button>
+              <button class="btn btn-success" onclick="openViewModal('${file.id}', '')">View With OTP</button>
+            </div>
+          `;
+        }
+
+        if (mode === "shared") {
+          actions = `
+            <button class="btn btn-success" onclick="openViewModal('${file.id}', '')">View With OTP</button>
+          `;
+        }
+
+        return `
+          <tr>
+            <td><b class="text-indigo-600">#${esc(file.id)}</b></td>
+            <td>
+              <b>${esc(file.fileName)}</b>
+              <div class="text-xs text-slate-500">${esc(file.supabaseUrl ? "Stored in Supabase" : "Secure storage")}</div>
+            </td>
+            <td>${esc(file.contentType)}</td>
+            <td>${esc(file.userId)}</td>
+            <td>${isPublicFile(file) ? '<span class="badge badge-green">Public</span>' : '<span class="badge badge-indigo">Private</span>'}</td>
+            <td>${dt(file.otpCreatedAt)}</td>
+            <td>${actions}</td>
+          </tr>
+        `;
+      }).join("");
+
+      $(targetId).innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>File ID</th>
+                <th>File Name</th>
+                <th>Type</th>
+                <th>Owner ID</th>
+                <th>Visibility</th>
+                <th>OTP Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function uploadSecureFile(event) {
+      event.preventDefault();
+
+      const fileInput = $("uploadFile");
+      if (!fileInput.files.length) {
+        msg("Please select a file.", false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("userId", userId);
+      formData.append("uploaderEmail", userEmail);
+      formData.append("isPublic", $("uploadVisibility").value);
+
+      try {
+        $("uploadBtn").disabled = true;
+        $("uploadBtn").textContent = "Uploading...";
+
+        const response = await fetch(BASE_URL + "/api/files/upload-secure", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await readJson(response);
+
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || data.errorCode || "Upload failed");
+        }
+
+        msg(data.message || "File uploaded successfully.");
+        event.target.reset();
+        loadStats();
+      } catch (error) {
+        msg(error.message, false);
+      } finally {
+        $("uploadBtn").disabled = false;
+        $("uploadBtn").textContent = "Upload Encrypted File";
+      }
+    }
+
+    function openShare(fileId) {
+      $("shareFileId").value = fileId;
+      $("shareEmail").value = "";
+      modal("shareModal");
+    }
+
+    function openOtp(fileId) {
+      $("otpFileId").value = fileId;
+      $("otpTargetEmail").value = "";
+      modal("otpModal");
+    }
+
+    function openRequest(fileId, ownerId) {
+      $("requestFileId").value = fileId;
+      $("requestRequesterEmail").value = userEmail;
+      $("requestOwnerEmail").value = "";
+      $("requestHelp").textContent = ownerId
+        ? `Owner ID: ${ownerId}. Enter owner email to notify them.`
+        : "Enter owner email to notify them.";
+      modal("requestModal");
+    }
+
+    function openViewModal(fileId, ownerEmail = "") {
+      $("viewFileId").value = fileId || "";
+      $("viewOtp").value = "";
+      $("viewRequesterEmail").value = userEmail;
+      $("viewOwnerEmail").value = ownerEmail || "";
+      $("previewFrame").src = "about:blank";
+      modal("viewModal");
+    }
+
+    async function shareFile(event) {
+      event.preventDefault();
+
+      try {
+        const data = await jsonApi(`/api/files/share-file?ownerEmail=${encodeURIComponent(userEmail)}`, "POST", {
+          fileId: Number($("shareFileId").value),
+          sharedWithEmail: $("shareEmail").value.trim()
+        });
+
+        modal("shareModal", false);
+        msg(data.message || "File shared. OTP sent.");
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function sendOtp(event) {
+      event.preventDefault();
+
+      try {
+        await sendOtpDirect(Number($("otpFileId").value), $("otpTargetEmail").value.trim());
+        modal("otpModal", false);
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function sendOtpDirect(fileId, targetEmail) {
+      const data = await jsonApi(`/api/files/otp/send?ownerEmail=${encodeURIComponent(userEmail)}`, "POST", {
+        fileId,
+        targetEmail
+      });
+
+      msg(data.message || "OTP sent successfully.");
+      loadRequests();
+    }
+
+    async function requestAccess(event) {
+      event.preventDefault();
+
+      try {
+        const data = await jsonApi(`/api/files/request-access?ownerEmail=${encodeURIComponent($("requestOwnerEmail").value.trim())}`, "POST", {
+          fileId: Number($("requestFileId").value),
+          requesterEmail: $("requestRequesterEmail").value.trim()
+        });
+
+        modal("requestModal", false);
+        msg(data.message || "Access request submitted.");
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function revokeAccess(fileId) {
+      if (!confirm("Revoke access for this file?")) return;
+
+      try {
+        const response = await fetch(BASE_URL + `/api/files/revoke-access/${fileId}?ownerEmail=${encodeURIComponent(userEmail)}`, {
+          method: "PUT"
+        });
+
+        const data = await readJson(response);
+
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || data.errorCode || "Revoke failed");
+        }
+
+        msg(data.message || "Access revoked successfully.");
+        loadMyFiles();
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm("Delete this user?")) return;
+
+      try {
+        const response = await fetch(BASE_URL + `/api/admin/users/${id}`, {
+          method: "DELETE"
+        });
+
+        const data = await readJson(response);
+
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || "Delete failed");
+        }
+
+        msg(data.message || "User deleted successfully.");
+        loadUsers();
+        loadStats();
+      } catch (error) {
+        msg(error.message, false);
+      }
+    }
+
+    function viewFile(event) {
+      event.preventDefault();
+
+      const fileId = $("viewFileId").value.trim();
+      const otp = $("viewOtp").value.trim();
+      const requesterEmail = $("viewRequesterEmail").value.trim();
+      const ownerEmail = $("viewOwnerEmail").value.trim();
+
+      if (!fileId || !otp || !requesterEmail || !ownerEmail) {
+        msg("File ID, OTP, requester email and owner email are required.", false);
+        return;
+      }
+
+      const previewUrl =
+        BASE_URL + `/api/files/preview/${encodeURIComponent(fileId)}` +
+        `?otp=${encodeURIComponent(otp)}` +
+        `&requesterEmail=${encodeURIComponent(requesterEmail)}` +
+        `&ownerEmail=${encodeURIComponent(ownerEmail)}`;
+
+      $("previewFrame").src = previewUrl;
+    }
+
+    function empty(text) {
+      return `<div class="rounded-xl border border-slate-200 bg-slate-50 p-6 text-slate-500 font-semibold">${text}</div>`;
+    }
+
+    function refreshVisible() {
+      const active = document.querySelector(".section.active");
+      if (!active) return;
+
+      if (active.id === "overviewSection") {
+        loadStats();
+        loadUploadStats();
+        loadRoleDistribution();
+      }
+
+      if (active.id === "usersSection") loadUsers();
+      if (active.id === "allFilesSection") loadAllFiles();
+      if (active.id === "myFilesSection") loadMyFiles();
+      if (active.id === "communitySection") loadCommunity();
+      if (active.id === "sharedSection") loadShared();
+      if (active.id === "requestsSection") loadRequests();
+      if (active.id === "logsSection") loadGlobalLogs();
+
+      msg("Dashboard refreshed.");
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    $("profileInfo").textContent = `${userName} • ${userEmail} • Role: ${userRole} • ID: ${userId}`;
+
+    loadStats();
+    loadUploadStats();
+    loadRoleDistribution();
+    loadShared();
+    loadRequests();
+  </script>
+</body>
+</html>

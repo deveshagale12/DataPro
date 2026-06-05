@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataPro | Login</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #e0e5ec;
+      --panel: #f0f2f5;
+      --muted: #d1d9e6;
+      --text: #2d3436;
+      --text-muted: #4a5568;
+      --accent: #ff4757;
+      --border: #babecc;
+      --light: #ffffff;
+
+      --shadow-card: 8px 8px 16px #babecc, -8px -8px 16px #ffffff;
+      --shadow-floating: 12px 12px 24px #babecc, -12px -12px 24px #ffffff, inset 1px 1px 0 rgba(255,255,255,0.5);
+      --shadow-pressed: inset 6px 6px 12px #babecc, inset -6px -6px 12px #ffffff;
+      --shadow-recessed: inset 4px 4px 8px #babecc, inset -4px -4px 8px #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.22;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      z-index: -1;
+    }
+
+    .mono {
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .industrial-panel {
+      background: var(--bg);
+      box-shadow: var(--shadow-card);
+      border-radius: 24px;
+      position: relative;
+    }
+
+    .industrial-panel::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 0 0, rgba(0,0,0,0.18) 2px, transparent 4px),
+        radial-gradient(circle at 100% 0, rgba(0,0,0,0.18) 2px, transparent 4px),
+        radial-gradient(circle at 0 100%, rgba(0,0,0,0.18) 2px, transparent 4px),
+        radial-gradient(circle at 100% 100%, rgba(0,0,0,0.18) 2px, transparent 4px);
+    }
+
+    .floating {
+      box-shadow: var(--shadow-floating);
+    }
+
+    .recessed {
+      background: var(--bg);
+      box-shadow: var(--shadow-recessed);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow:
+        4px 4px 8px rgba(166, 50, 60, 0.45),
+        -4px -4px 8px rgba(255, 120, 130, 0.45),
+        inset 1px 1px 0 rgba(255,255,255,0.35);
+      transition: all 150ms ease;
+    }
+
+    .btn-primary:active {
+      transform: translateY(2px);
+      box-shadow: inset 5px 5px 10px rgba(166, 50, 60, 0.55),
+                  inset -5px -5px 10px rgba(255, 130, 140, 0.35);
+    }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      box-shadow: var(--shadow-card);
+      transition: all 150ms ease;
+    }
+
+    .btn-secondary:active {
+      transform: translateY(2px);
+      box-shadow: var(--shadow-pressed);
+    }
+
+    .input-box {
+      height: 56px;
+      border: none;
+      outline: none;
+      border-radius: 12px;
+      padding: 0 18px;
+      width: 100%;
+      background: var(--bg);
+      box-shadow: var(--shadow-recessed);
+      font-family: "JetBrains Mono", monospace;
+      color: var(--text);
+    }
+
+    .input-box:focus {
+      box-shadow:
+        var(--shadow-recessed),
+        0 0 0 2px var(--accent),
+        0 0 14px rgba(255, 71, 87, 0.35);
+    }
+
+    textarea.input-box {
+      height: 90px;
+      padding-top: 16px;
+      resize: none;
+    }
+
+    .screen {
+      background: #1f2933;
+      border-radius: 22px;
+      box-shadow:
+        inset 8px 8px 18px rgba(0,0,0,0.55),
+        inset -4px -4px 10px rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(255,255,255,0.03) 50%, rgba(0,0,0,0.16) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+    }
+
+    .led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 12px #22c55e;
+      animation: pulse 1.7s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .45; }
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+    }
+
+    .tab-active {
+      background: var(--accent);
+      color: white;
+      box-shadow:
+        4px 4px 8px rgba(166, 50, 60, 0.45),
+        -4px -4px 8px rgba(255, 120, 130, 0.45);
+    }
+
+    .tab-normal {
+      background: var(--bg);
+      color: var(--text-muted);
+      box-shadow: var(--shadow-card);
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="min-h-screen flex items-center justify-center px-4 py-10">
+
+    <section class="industrial-panel w-full max-w-6xl p-5 md:p-8 lg:p-10 grid lg:grid-cols-[1.05fr_0.95fr] gap-8">
+
+      <!-- LEFT SIDE -->
+      <div class="relative z-10 flex flex-col justify-between gap-8">
+
+        <div>
+          <div class="flex items-center gap-3 mb-8">
+            <div class="led"></div>
+            <span class="mono text-xs font-bold tracking-widest text-[#4a5568] uppercase">
+              System Operational
+            </span>
+          </div>
+
+          <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight drop-shadow-[0_1px_0_#ffffff] leading-tight">
+            DataPro
+          </h1>
+
+          <p class="mt-5 max-w-xl text-lg leading-relaxed font-medium text-[#4a5568]">
+            Secure user authentication panel with role-based access control,
+            OTP password recovery, and industrial dashboard experience.
+          </p>
+        </div>
+
+        <div class="screen p-5 md:p-7 min-h-[310px]">
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-6">
+              <p class="mono text-xs text-green-400 tracking-widest">
+                AUTH MODULE / ONLINE
+              </p>
+              <div class="flex gap-2">
+                <span class="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]"></span>
+                <span class="w-3 h-3 rounded-full bg-yellow-400 shadow-[0_0_10px_#facc15]"></span>
+                <span class="w-3 h-3 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80]"></span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="rounded-xl bg-white/10 p-4 border border-white/10">
+                <p class="mono text-xs text-slate-300">ROLE</p>
+                <h3 class="mono text-2xl text-white mt-2">USER</h3>
+              </div>
+
+              <div class="rounded-xl bg-white/10 p-4 border border-white/10">
+                <p class="mono text-xs text-slate-300">ROLE</p>
+                <h3 class="mono text-2xl text-[#ff4757] mt-2">ADMIN</h3>
+              </div>
+
+              <div class="col-span-2 rounded-xl bg-white/10 p-4 border border-white/10">
+                <p class="mono text-xs text-slate-300 mb-3">API STATUS</p>
+                <div class="h-3 rounded-full bg-slate-700 overflow-hidden">
+                  <div class="h-full w-[82%] bg-[#ff4757] rounded-full"></div>
+                </div>
+              </div>
+
+              <div class="col-span-2 rounded-xl bg-black/30 p-4 border border-white/10">
+                <p class="mono text-xs text-green-400">
+                  POST /api/users/login<br>
+                  POST /api/users/register<br>
+                  POST /api/users/forgot-password<br>
+                  POST /api/users/reset-password
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE AUTH PANEL -->
+      <div class="relative z-10 industrial-panel floating p-5 md:p-7">
+
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <p class="mono text-xs uppercase tracking-widest text-[#ff4757] font-bold">
+              Access Terminal
+            </p>
+            <h2 class="text-3xl font-extrabold drop-shadow-[0_1px_0_#ffffff]">
+              Authentication
+            </h2>
+          </div>
+
+          <div class="hidden sm:flex gap-1">
+            <span class="h-7 w-1 rounded-full recessed"></span>
+            <span class="h-7 w-1 rounded-full recessed"></span>
+            <span class="h-7 w-1 rounded-full recessed"></span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-5">
+          <button id="loginTab" onclick="showForm('login')" class="tab-active h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest">
+            Login
+          </button>
+          <button id="registerTab" onclick="showForm('register')" class="tab-normal h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest">
+            Register
+          </button>
+        </div>
+
+        <div id="messageBox" class="hidden mb-5 rounded-xl px-4 py-3 mono text-sm font-bold"></div>
+
+        <!-- LOGIN -->
+        <form id="loginForm" class="form-section active" onsubmit="loginUser(event)">
+          <div class="space-y-4">
+            <div>
+              <label class="mono text-xs font-bold uppercase tracking-widest text-[#4a5568]">Email</label>
+              <input id="loginEmail" type="email" class="input-box mt-2" placeholder="john@gmail.com" required>
+            </div>
+
+            <div>
+              <label class="mono text-xs font-bold uppercase tracking-widest text-[#4a5568]">Password</label>
+              <input id="loginPassword" type="password" class="input-box mt-2" placeholder="********" required>
+            </div>
+
+            <button class="btn-primary w-full h-14 rounded-xl mono text-sm font-bold uppercase tracking-widest">
+              Login System
+            </button>
+
+            <button type="button" onclick="showForm('forgot')" class="btn-secondary w-full h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest">
+              Forgot Password
+            </button>
+          </div>
+        </form>
+
+        <!-- REGISTER -->
+        <form id="registerForm" class="form-section" onsubmit="registerUser(event)">
+          <div class="grid md:grid-cols-2 gap-4">
+            <input id="regName" class="input-box" placeholder="Name" required>
+            <input id="regEmail" type="email" class="input-box" placeholder="Email" required>
+            <input id="regPassword" type="password" class="input-box" placeholder="Password" required>
+            <input id="regMobile" class="input-box" placeholder="Mobile" required>
+            <input id="regEducation" class="input-box" placeholder="Education">
+            <input id="regDob" type="date" class="input-box">
+          </div>
+
+          <textarea id="regAddress" class="input-box mt-4" placeholder="Address"></textarea>
+
+          <select id="regRole" class="input-box mt-4">
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+
+          <button class="btn-primary mt-5 w-full h-14 rounded-xl mono text-sm font-bold uppercase tracking-widest">
+            Register User
+          </button>
+
+          <button type="button" onclick="showForm('login')" class="btn-secondary mt-4 w-full h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest">
+            Back To Login
+          </button>
+        </form>
+
+        <!-- FORGOT -->
+        <form id="forgotForm" class="form-section" onsubmit="forgotPassword(event)">
+          <div class="space-y-4">
+            <p class="text-[#4a5568] font-medium">
+              Enter your registered email. OTP will be sent to your email address.
+            </p>
+
+            <input id="forgotEmail" type="email" class="input-box" placeholder="registered@email.com" required>
+
+            <button class="btn-primary w-full h-14 rounded-xl mono text-sm font-bold uppercase tracking-widest">
+              Send OTP
+            </button>
+
+            <button type="button" onclick="showForm('reset')" class="btn-secondary w-full h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest">
+              Reset With OTP
+            </button>
+          </div>
+        </form>
+
+        <!-- RESET -->
+        <form id="resetForm" class="form-section" onsubmit="resetPassword(event)">
+          <div class="space-y-4">
+            <input id="resetEmail" type="email" class="input-box" placeholder="Email" required>
+            <input id="resetOtp" class="input-box" placeholder="OTP Code" required>
+            <input id="newPassword" type="password" class="input-box" placeholder="New Password" required>
+
+            <button class="btn-primary w-full h-14 rounded-xl mono text-sm font-bold uppercase tracking-widest">
+              Reset Password
+            </button>
+
+            <button type="button" onclick="showForm('login')" class="btn-secondary w-full h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest">
+              Back To Login
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const BASE_URL = "https://datapro-bh55.onrender.com";
+
+    function showForm(type) {
+      const forms = ["loginForm", "registerForm", "forgotForm", "resetForm"];
+      forms.forEach(id => document.getElementById(id).classList.remove("active"));
+
+      document.getElementById(type + "Form").classList.add("active");
+
+      document.getElementById("loginTab").className =
+        type === "login"
+          ? "tab-active h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest"
+          : "tab-normal h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest";
+
+      document.getElementById("registerTab").className =
+        type === "register"
+          ? "tab-active h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest"
+          : "tab-normal h-12 rounded-xl mono text-xs font-bold uppercase tracking-widest";
+
+      hideMessage();
+    }
+
+    function showMessage(message, success = true) {
+      const box = document.getElementById("messageBox");
+      box.classList.remove("hidden");
+
+      box.className = success
+        ? "mb-5 rounded-xl px-4 py-3 mono text-sm font-bold bg-green-100 text-green-700 shadow-[var(--shadow-recessed)]"
+        : "mb-5 rounded-xl px-4 py-3 mono text-sm font-bold bg-red-100 text-red-700 shadow-[var(--shadow-recessed)]";
+
+      box.innerText = message;
+    }
+
+    function hideMessage() {
+      const box = document.getElementById("messageBox");
+      box.className = "hidden mb-5 rounded-xl px-4 py-3 mono text-sm font-bold";
+      box.innerText = "";
+    }
+
+    async function postAPI(endpoint, data) {
+      const response = await fetch(BASE_URL + endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.success === false) {
+        throw new Error(result.message || "Request failed");
+      }
+
+      return result;
+    }
+
+    async function registerUser(event) {
+      event.preventDefault();
+
+      const data = {
+        name: document.getElementById("regName").value.trim(),
+        email: document.getElementById("regEmail").value.trim(),
+        password: document.getElementById("regPassword").value,
+        mobile: document.getElementById("regMobile").value.trim(),
+        address: document.getElementById("regAddress").value.trim(),
+        education: document.getElementById("regEducation").value.trim(),
+        dob: document.getElementById("regDob").value,
+        role: document.getElementById("regRole").value
+      };
+
+      try {
+        const result = await postAPI("/api/users/register", data);
+        showMessage(result.message || "User registered successfully");
+        event.target.reset();
+
+        setTimeout(() => {
+          showForm("login");
+        }, 900);
+
+      } catch (error) {
+        showMessage(error.message, false);
+      }
+    }
+
+    async function loginUser(event) {
+      event.preventDefault();
+
+      const data = {
+        email: document.getElementById("loginEmail").value.trim(),
+        password: document.getElementById("loginPassword").value
+      };
+
+      try {
+        const result = await postAPI("/api/users/login", data);
+
+        const user = result.data || result.user || result.response || result.object;
+
+        if (!user) {
+          throw new Error("Login successful, but user data not found in response.");
+        }
+
+        const role = user.role ? user.role.toUpperCase() : "USER";
+
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+        localStorage.setItem("userRole", role);
+        localStorage.setItem("userEmail", user.email || data.email);
+
+        showMessage(result.message || "Login successful");
+
+        setTimeout(() => {
+          if (role === "ADMIN") {
+            window.location.href = "admindash.html";
+          } else {
+            window.location.href = "userdash.html";
+          }
+        }, 700);
+
+      } catch (error) {
+        showMessage(error.message, false);
+      }
+    }
+
+    async function forgotPassword(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("forgotEmail").value.trim();
+
+      try {
+        const result = await postAPI("/api/users/forgot-password", { email });
+
+        showMessage(result.message || "OTP sent successfully");
+        document.getElementById("resetEmail").value = email;
+
+        setTimeout(() => {
+          showForm("reset");
+        }, 900);
+
+      } catch (error) {
+        showMessage(error.message, false);
+      }
+    }
+
+    async function resetPassword(event) {
+      event.preventDefault();
+
+      const data = {
+        email: document.getElementById("resetEmail").value.trim(),
+        otp: document.getElementById("resetOtp").value.trim(),
+        newPassword: document.getElementById("newPassword").value
+      };
+
+      try {
+        const result = await postAPI("/api/users/reset-password", data);
+
+        showMessage(result.message || "Password reset successfully");
+        event.target.reset();
+
+        setTimeout(() => {
+          showForm("login");
+        }, 900);
+
+      } catch (error) {
+        showMessage(error.message, false);
+      }
+    }
+  </script>
+
+</body>
+</html>
