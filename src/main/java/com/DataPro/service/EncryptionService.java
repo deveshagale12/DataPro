@@ -24,9 +24,18 @@ public class EncryptionService {
 
     // ── Get AES key from config ──────────────────────────────────────
     private SecretKey getSecretKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(secretKeyBase64);
+    try {
+        byte[] keyBytes = Base64.getDecoder().decode(secretKeyBase64.trim());
+        if (keyBytes.length != 32) {
+            throw new IllegalArgumentException(
+                "Encryption key must be 32 bytes (256-bit). Current length: " + keyBytes.length + " bytes."
+            );
+        }
         return new SecretKeySpec(keyBytes, "AES");
+    } catch (IllegalArgumentException e) {
+        throw new RuntimeException("Invalid ENCRYPTION_KEY: " + e.getMessage());
     }
+}
 
     // ── Encrypt bytes → Base64(IV + ciphertext) ──────────────────────
     public byte[] encrypt(byte[] plainBytes) throws Exception {
