@@ -23,6 +23,9 @@ public class SecurityConfig {
                 // 2. Explicitly restrict the admin dashboard to ADMIN roles only
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 
+                .requestMatchers("/api/files/**").permitAll()
+
+                
                 // 3. Catch-all for any other secure resources
                 .anyRequest().authenticated()
             );
