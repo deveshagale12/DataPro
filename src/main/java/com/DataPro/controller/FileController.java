@@ -208,5 +208,23 @@ public class FileController {
         log.info("[CONTROLLER] Found {} files shared with {}", files.size(), email);
         return ResponseEntity.ok(new FileDTO.ApiResponse(true, "Shared files fetched.", files));
     }
+
+    @GetMapping("/preview/{fileId}")
+public ResponseEntity<byte[]> previewFile(
+        @PathVariable Long fileId,
+        @RequestParam("otp") String otp,
+        @RequestParam("requesterEmail") String requesterEmail,
+        @RequestParam("ownerEmail") String ownerEmail
+) throws Exception {
+
+    FileService.FilePreviewResponse preview =
+            fileService.previewDecryptedFile(fileId, otp, requesterEmail, ownerEmail);
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "inline; filename=\"" + preview.getFileName() + "\"")
+            .contentType(MediaType.parseMediaType(preview.getContentType()))
+            .body(preview.getFileBytes());
+}
 }
  

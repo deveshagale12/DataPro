@@ -24,6 +24,36 @@ import java.util.stream.Collectors;
 
 @Service
 public class FileService {
+
+
+    public static class FilePreviewResponse {
+
+    private String fileName;
+    private String contentType;
+    private byte[] fileBytes;
+
+    public FilePreviewResponse(String fileName, String contentType, byte[] fileBytes) {
+        this.fileName = fileName;
+        this.contentType = contentType;
+        this.fileBytes = fileBytes;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public byte[] getFileBytes() {
+        return fileBytes;
+    }
+}
+
+
+
+
  
     private static final Logger log = LoggerFactory.getLogger(FileService.class);
     private static final int OTP_EXPIRY_MINUTES = 10;
@@ -333,5 +363,59 @@ public class FileService {
         r.setDownloadTime(dl.getDownloadTime());
         return r;
     }
+
+    public FilePreviewResponse previewDecryptedFile(
+        Long fileId,
+        String otp,
+        String requesterEmail,
+        String ownerEmail
+) throws Exception {
+
+    UserFile file = fileRepo.findById(fileId)
+            .orElseThrow(() -> new FileNotFoundException("File not found with id: " + fileId));
+
+    if (file.isAccessRevoked()) {
+        throw new AccessDeniedException("Access to this file has been revoked.");
+    }
+
+    if (file.getShareOtp() == null || !file.getShareOtp().equals(otp)) {
+        throw new InvalidOtpException("Invalid OTP provided.");
+    }
+
+    if (file.getOtpCreatedAt() == null ||
+            file.getOtpCreatedAt().plusMinutes(10).isBefore(LocalDateTime.now())) {
+        throw new InvalidOtpException("OTP has expired. Please request a new one.");
+    }
+
+    byte[] encryptedBytes;
+
+    try {
+        encryptedBytes = supabaseService.downloadFile(file.getSupabasePath());
+    } catch (Exception e) {
+        throw new StorageException("Failed to retrieve file from storage: " + e.getMessage());
+    }
+
+    byte[] decryptedBytes;
+
+    try {
+        decryptedBytes = encryptionService.decrypt(encryptedBytes);
+    } catch (Exception e) {
+        throw new EncryptionException("File decryption failed: " + e.getMessage());
+    }
+
+    saveAuditLog(
+            file.getId(),
+            file.getFileName(),
+            requesterEmail,
+            "PREVIEW",
+            file.getUserId()
+    );
+
+    return new FilePreviewResponse(
+            file.getFileName(),
+            file.getContentType(),
+            decryptedBytes
+    );
+}
 }
  
