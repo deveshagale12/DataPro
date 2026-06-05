@@ -1,14 +1,14 @@
-package com.DataPro.exception;
+package com.DataPro.service;
 
 
-import com.example.data_deduplication.dto.FileDTO;
-import com.example.data_deduplication.entity.AccessRequest;
-import com.example.data_deduplication.entity.DownloadLog;
-import com.example.data_deduplication.entity.UserFile;
-import com.example.data_deduplication.exception.*;
-import com.example.data_deduplication.repository.AccessRequestRepository;
-import com.example.data_deduplication.repository.DownloadLogRepository;
-import com.example.data_deduplication.repository.UserFileRepository;
+import com.DataPro.dto.FileDTO;
+import com.DataPro.entity.AccessRequest;
+import com.DataPro.entity.DownloadLog;
+import com.DataPro.entity.UserFile;
+import com.DataPro.exception.*;
+import com.DataPro.repository.AccessRequestRepository;
+import com.DataPro.repository.DownloadLogRepository;
+import com.DataPro.repository.UserFileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
