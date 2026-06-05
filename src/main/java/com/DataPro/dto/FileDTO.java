@@ -254,55 +254,40 @@ public class FileDTO {
     }
 
     // ─────────────────── File Stats Response ─────────────
-    public static class FileStatsResponse {
-        private long totalFiles;
-        private long publicFiles;
-        private long privateFiles;
-        private long revokedFiles;
+  public static class FileStatsResponse {
+    private long totalFiles;
+    private long publicFiles;
+    private long privateFiles;
+    private long revokedFiles;
+    private long totalDownloads;
+    
 
-        public FileStatsResponse() {
-        }
-
-        public FileStatsResponse(long totalFiles, long publicFiles, long privateFiles, long revokedFiles) {
-            this.totalFiles = totalFiles;
-            this.publicFiles = publicFiles;
-            this.privateFiles = privateFiles;
-            this.revokedFiles = revokedFiles;
-        }
-
-        public long getTotalFiles() {
-            return totalFiles;
-        }
-
-        public void setTotalFiles(long totalFiles) {
-            this.totalFiles = totalFiles;
-        }
-
-        public long getPublicFiles() {
-            return publicFiles;
-        }
-
-        public void setPublicFiles(long publicFiles) {
-            this.publicFiles = publicFiles;
-        }
-
-        public long getPrivateFiles() {
-            return privateFiles;
-        }
-
-        public void setPrivateFiles(long privateFiles) {
-            this.privateFiles = privateFiles;
-        }
-
-        public long getRevokedFiles() {
-            return revokedFiles;
-        }
-
-        public void setRevokedFiles(long revokedFiles) {
-            this.revokedFiles = revokedFiles;
-        }
+    public FileStatsResponse() {
     }
 
+    public FileStatsResponse(long totalFiles, long publicFiles, long privateFiles, long revokedFiles, long totalDownloads) {
+        this.totalFiles = totalFiles;
+        this.publicFiles = publicFiles;
+        this.privateFiles = privateFiles;
+        this.revokedFiles = revokedFiles;
+        this.totalDownloads = totalDownloads;
+    }
+
+    public long getTotalFiles() { return totalFiles; }
+    public void setTotalFiles(long totalFiles) { this.totalFiles = totalFiles; }
+
+    public long getPublicFiles() { return publicFiles; }
+    public void setPublicFiles(long publicFiles) { this.publicFiles = publicFiles; }
+
+    public long getPrivateFiles() { return privateFiles; }
+    public void setPrivateFiles(long privateFiles) { this.privateFiles = privateFiles; }
+
+    public long getRevokedFiles() { return revokedFiles; }
+    public void setRevokedFiles(long revokedFiles) { this.revokedFiles = revokedFiles; }
+
+    public long getTotalDownloads() { return totalDownloads; }
+    public void setTotalDownloads(long totalDownloads) { this.totalDownloads = totalDownloads; }
+}
     // ─────────────────── Audit Log Response ──────────────
     public static class AuditLogResponse {
         private Long id;
