@@ -147,4 +147,62 @@ public class UserDTO {
         public String getProfilePic() { return profilePic; }
         public void setProfilePic(String profilePic) { this.profilePic = profilePic; }
     }
+
+    public static class UpdateRequest {
+
+    private String name;
+    private String mobile;
+    private String address;
+    private String education;
+    private LocalDate dob;
+    private String profilePic;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getEducation() {
+        return education;
+    }
+
+    public void setEducation(String education) {
+        this.education = education;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+}
 }

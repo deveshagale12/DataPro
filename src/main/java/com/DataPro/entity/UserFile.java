@@ -1,5 +1,4 @@
 package com.DataPro.entity;
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
