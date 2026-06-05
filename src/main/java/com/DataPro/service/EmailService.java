@@ -100,25 +100,7 @@ public class EmailService {
         }
     }
  
- @@Async("emailTaskExecutor")
-public void sendUserDeletedEmail(String toEmail, String name) {
-    try {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("DataPro Account Removed");
-        message.setText(
-                "Hello " + name + ",\n\n" +
-                "Your DataPro account has been removed by the administrator.\n\n" +
-                "If you think this was a mistake, please contact support.\n\n" +
-                "Regards,\nDataPro Team"
-        );
-
-        mailSender.send(message);
-
-    } catch (Exception e) {
-        System.out.println("Failed to send delete user email: " + e.getMessage());
-    }
-}
+ 
     // ── Access request notification to owner ────────────────────────
     @Async("emailTaskExecutor")
     public void sendAccessRequestEmail(String ownerEmail, String requesterEmail, String fileName) {
@@ -177,4 +159,24 @@ public void sendUserDeletedEmail(String toEmail, String name) {
             log.error("Failed to send download notification: {}", e.getMessage());
         }
        }
+       @Async
+public void sendUserDeletedEmail(String toEmail, String name) {
+    try {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("DataPro Account Deleted");
+
+        message.setText(
+                "Hello " + name + ",\n\n" +
+                "Your DataPro account has been deleted by the administrator.\n\n" +
+                "If this was unexpected, please contact DataPro support.\n\n" +
+                "Regards,\nDataPro Team"
+        );
+
+        mailSender.send(message);
+
+    } catch (Exception e) {
+        System.out.println("Failed to send user delete email: " + e.getMessage());
+    }
+}
 }
