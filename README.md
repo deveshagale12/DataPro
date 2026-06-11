@@ -258,6 +258,6 @@ GitHub:
 https://github.com/deveshagale12
 
 LinkedIn:
-(Add your LinkedIn Profile URL here)
+www.linkedin.com/in/devesh-a-7bb368289
 
 ⭐ If you like this project, please star the repository.
